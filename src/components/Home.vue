@@ -4,59 +4,30 @@
       <div class="logo">
         蛐蛐
       </div>
-      <a-menu theme="dark" mode="inline" :defaultSelectedKeys="['4']">
-        <a-menu-item key="1">
-          <a-icon type="user" />
-          <span class="nav-text">nav 1</span>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <a-icon type="video-camera" />
-          <span class="nav-text">nav 2</span>
-        </a-menu-item>
-        <a-menu-item key="3">
-          <a-icon type="upload" />
-          <span class="nav-text">nav 3</span>
-        </a-menu-item>
-        <a-menu-item key="4">
-          <a-icon type="bar-chart" />
-          <span class="nav-text">nav 4</span>
-        </a-menu-item>
-        <a-menu-item key="5">
-          <a-icon type="cloud-o" />
-          <span class="nav-text">nav 5</span>
-        </a-menu-item>
-        <a-menu-item key="6">
-          <a-icon type="appstore-o" />
-          <span class="nav-text">nav 6</span>
-        </a-menu-item>
-        <a-menu-item key="7">
-          <a-icon type="team" />
-          <span class="nav-text">nav 7</span>
-        </a-menu-item>
-        <a-menu-item key="8">
-          <a-icon type="shop" />
-          <span class="nav-text">nav 8</span>
+      <a-menu theme="dark" mode="inline" :defaultSelectedKeys="['mycrickets']" :defaultOpenKey="['crickets']" @click="handleClick">
+        <a-sub-menu key="crickets">
+          <span slot="title" class="nav-text"><a-icon type="user" />蛐蛐</span>
+          
+          <a-menu-item key="mycrickets">我的</a-menu-item>
+          <a-menu-item key="allcrickets">所有</a-menu-item>
+        </a-sub-menu>
+        <a-sub-menu key="market">
+          <span slot="title" class="nav-text"><a-icon type="user" />商店</span>
+          
+          <a-menu-item key="roll">抽取</a-menu-item>
+          <a-menu-item key="consignment">寄售</a-menu-item>
+          <a-menu-item key="buy">购买</a-menu-item>
+
+        </a-sub-menu>
+        <a-menu-item key="worldcup">
+         <span class="nav-text"><a-icon type="user" />比赛</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
       <a-layout-header :style="{ background: '#fff', padding: 0 }" />
-      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <div :style="{ padding: '24px', background: '#fff', textAlign: 'center' }">
-          ...
-          <br />
-          Really
-          <br />...<br />...<br />...<br />
-          long
-          <br />...<br />...<br />...<br />...<br />...<br />...
-          <br />...<br />...<br />...<br />...<br />...<br />...
-          <br />...<br />...<br />...<br />...<br />...<br />...
-          <br />...<br />...<br />...<br />...<br />...<br />...
-          <br />...<br />...<br />...<br />...<br />...<br />...
-          <br />...<br />...<br />...<br />...<br />...<br />...
-          <br />...<br />...<br />...<br />...<br />...<br />
-          content
-        </div>
+      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial', background: '#fff', padding: '20px' }">
+        <router-view />
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
         Ant Design ©2018 Created by Ant UED
@@ -64,6 +35,31 @@
     </a-layout>
   </a-layout>
 </template>
+
+<script>
+export default {
+  data () {
+    return {}
+  },
+  methods: {
+    handleClick (e) {
+      console.log(e)
+      const routeMap = {
+        'mycrickets': {name: 'mycrickets'},
+        'allcrickets': {name: 'allcrickets'},
+        'roll': {name: 'rollcricket'},
+        'consignment': {name: 'consignment'},
+        'buy': {name: 'buy'},
+        'worldcup': {name: 'worldcup'}
+      }
+      this.$router.push(routeMap[e.key])
+    }
+  }
+}
+</script>
+
+
+
 <style>
 #components-layout-demo-fixed-sider .logo {
   height: 32px;

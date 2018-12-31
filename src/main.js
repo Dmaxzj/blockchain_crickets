@@ -4,12 +4,19 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-import { Button, Layout, Menu, Icon, message} from 'ant-design-vue'
+import { Button, Layout, Menu, Icon, message, List, Card, Col, Row, Table, Input, InputNumber } from 'ant-design-vue'
 
 Vue.use(Button)
 Vue.use(Layout)
 Vue.use(Menu)
 Vue.use(Icon)
+Vue.use(List)
+Vue.use(Card)
+Vue.use(Col)
+Vue.use(Row)
+Vue.use(Table)
+Vue.use(Input)
+Vue.use(InputNumber)
 
 Vue.prototype.$message = message
 

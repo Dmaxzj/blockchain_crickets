@@ -2,12 +2,7 @@ let Web3 = require('web3');
 
 let web3 = new Web3();
 
-web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
-
-web3.eth.getAccounts().then(console.log);
-
-let user0 = web3.eth.getAccounts()[0];
-
+web3.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"))
 
 var myContract = new web3.eth.Contract([
     {
@@ -279,6 +274,179 @@ var myContract = new web3.eth.Contract([
     }
 ], '0xEBDAf30C32F3fFe1d361b403daF2c2E9FeA0099a');
 
-console.log(myContract.methods.crickets(0).call({from: user0}, function(err, result) {
-    console.log(result);
-}));
+
+function cricket(name, owner) {
+    this.name = name
+    this.owner = owner
+}
+
+
+
+
+
+let user0 = '0xfD913bEF9F04Befd3A87f898022160e634C29A05'
+
+async function loginAccount(address, password) {
+    await web3.eth.personal.unlockAccount(address, password, 600)
+}
+
+async function getAllAccounts() {
+    return await web3.eth.getAccounts()
+}
+
+async function getAllCrickets() {
+    let crickets = []
+    let index = 0
+
+    await myContract.methods.index().call(err, result => {
+        index = result
+    })
+
+    for (i = 0; i < index; i++) {
+        await myContract.methods.crickets(index).call(function (err, result) {
+            if (err) {
+                console.log(err)
+                return crickets
+            } else {
+                let { name: name, owner: owner } = result
+                // console.log(name, owner)
+                crickets.push({ name, owner })
+            }
+        })
+    }
+    return crickets
+}
+
+
+async function getCricketsByOwner(owner) {
+    let crickets = []
+    let cid
+    await myContract.methods.getCricketsByOwner(owner, (err, result) => {
+        if (err) {
+            throw err
+        } else {
+            cid = result
+        }
+    })
+
+    cid.map(async (x) => {
+        await myContract.methods.crickets(x).call(err, result => {
+            if (err) {
+                throw err
+            } else {
+                crickets.push(result)
+            }
+        })
+    })
+
+    return crickets
+
+}
+
+
+async function consignmentCricket(price, cid, owner) {
+    let a = await myContract.methods.consignment(price, cid).send({from: owner})
+    console.log(a)
+}
+
+async function getCricketOnSelling() {
+    let crickets = []
+    let cid
+    await myContract.methods.getCricketOnSelling((err, result) => {
+        if (err) {
+            throw err
+        } else {
+            cid = result
+        }
+    })
+
+    cid.map(async (x) => {
+        await myContract.methods.crickets(x).call(err, result => {
+            if (err) {
+                throw err
+            } else {
+                crickets.push(result)
+            }
+        })
+    })
+
+    return crickets
+
+}
+
+
+async function buyCriket(cid, price, buyer) {
+    await myContract.methods.buyCriket(cid).send({from: buyer, value: price})
+} 
+
+
+async function createCricket(name, nonce, owner) {
+    await myContract.methods.getCricket(name, nonce).send({from: owner, gas: 500000})
+}
+
+async function getWorldCup() {
+    let t = await myContract.methods.worldCup().call()
+}
+
+async function participateGame(cid, owner) {
+    let worldCup = await getWorldCup()
+    // TODO: check world status
+    let t = await myContract.methods.participateGame(cid).send({ from: owner })
+    console.log(t)
+}
+
+async function find(cid) {
+    let t = await myContract.methods.find(cid).call()
+}
+
+async function beginFighting(owner) {
+    let t = await myContract.methods.beginFighting().send({from: owner, gas: 3000000})
+} 
+
+async function getRecordByCricketId(cid) {
+    let t = await myContract.methods.getRecordByCricketId(cid).call()
+    // TODO: map record
+}
+
+function parseCricket(c) {
+    let { name: name, owner: owner, strength: strength, momentum: momentum, size: size, win: win, loss: loss, lastWin: lastWin, price: price, selling: selling } = c
+    return {
+        name,
+        owner,
+        strength,
+        momentum,
+        size,
+        win,
+        loss,
+        lastWin,
+        price,
+        selling
+    }
+}
+
+function parseRecord(r) {
+    let { winnerId: winnerId, loserId: loserId, round1: round1, round2: round2, round3: round3 } = r
+    return {
+        winnerId,
+        loserId,
+        round1,
+        round2,
+        round3
+    }
+}
+
+async function test() {
+    try {
+        await loginAccount(user0, 'dzj')
+        let a = await participateGame(0, user0)
+        console.log(a)
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+test()
+
+setTimeout(() => {
+    
+}, 3000);

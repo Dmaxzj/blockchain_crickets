@@ -1,0 +1,82 @@
+<template>
+  <a-list :grid="{ gutter: 16, column: 4 }" :dataSource="crickets">
+    <a-list-item slot="renderItem" slot-scope="item, index">
+      <a-card
+        :bodyStyle="{ padding: 0 }"
+        :title="item.name"
+        hoverable
+        bordered
+      >
+        <img
+          alt="example"
+          src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+          slot="cover"
+        >
+        <a-row
+          type="flex"
+          justify="center"
+          align="middle"
+          :style="{ textAlign: 'center', height: '30px' }"
+        >
+          <a-col :span="12">胜场: {{item.win}}</a-col>
+          <a-col :span="12">负场: {{item.loss}}</a-col>
+        </a-row>
+        <div :style="{ width: '100%' }">
+          <a-input-number
+            :min="1"
+            :style="{ width: '100%', float: 'right' }"
+            v-model="item.price"
+          />
+        </div>
+        <div style="width: 100%">
+          <a-button type="primary" block @click="clickHandle(item.id)">出售</a-button>
+        </div>
+      </a-card>
+    </a-list-item>
+  </a-list>
+</template>
+
+<script>
+const crickets = [
+  {
+    id: 0,
+    name: "ququ0",
+    win: 10,
+    loss: 20,
+    price: 0
+  },
+  {
+    id: 1,
+    name: "ququ1",
+    win: 110,
+    loss: 220,
+    price: 0
+  },
+  {
+    id: 2,
+    name: "ququ2",
+    win: 110,
+    loss: 20,
+    price: 0
+  }
+];
+
+export default {
+  data() {
+    return {
+      crickets: crickets
+    };
+  },
+  methods: {
+      onChange(value) {
+        console.log('changed', value)
+      },
+      clickHandle (e) {
+          console.log(crickets[e])
+      }
+  }
+};
+</script>
+
+<style>
+</style>
