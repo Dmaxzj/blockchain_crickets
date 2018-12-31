@@ -56,6 +56,7 @@ var controllers = {
 
     async consignmentCricket(req, res) {
         try {
+            console.log(req.body)
             await bc.consignmentCricket(req.body.price, req.body.cid, req.session.address)
             res.status(200).end()
         } catch (e) {

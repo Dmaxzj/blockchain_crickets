@@ -4,7 +4,7 @@
       <a-card :bodyStyle="{ padding: 0 }" :title="item.name" hoverable bordered>
         <img
           alt="example"
-          src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+          :src="item.img"
           slot="cover"
         >
         <a-row
@@ -16,9 +16,9 @@
           <a-col :span="12">胜场: {{item.win}}</a-col>
           <a-col :span="12">负场: {{item.loss}}</a-col>
         </a-row>
-        <p style="text-align: center" >价格: {{item.price}} </p>
+        <p style="text-align: center">价格: {{item.price}}</p>
         <div style="width: 100%">
-          <a-button type="primary" block @click="handleClick(item.id)">购买</a-button>
+          <a-button type="primary" block @click="handleClick(item.id, item.price)">购买</a-button>
         </div>
       </a-card>
     </a-list-item>
@@ -26,39 +26,51 @@
 </template>
 
 <script>
-const crickets = [
-  {
-    id: 0,
-    name: "ququ0",
-    win: 10,
-    loss: 20,
-    price: 0
-  },
-  {
-    id: 1,
-    name: "ququ1",
-    win: 110,
-    loss: 220,
-    price: 0
-  },
-  {
-    id: 2,
-    name: "ququ2",
-    win: 110,
-    loss: 20,
-    price: 0
-  }
-];
-
 export default {
   data() {
     return {
-      crickets: crickets
+      crickets: []
     };
   },
-  methods: {
-    handleClick() {
+  created() {
+    this.$http.get('/api/crickets/selling').then( response => {
       
+        this.crickets = respones.data.map(item => {
+              item.img = this.parseImg(item.id)
+              return item
+            });
+     
+    }).catch( error => {
+      this.$message.error(error)
+    })
+  },
+   computed: {
+    parseImg(id) {
+      return '/images/ququ' + (id % 4 + 1) + '.png'
+    }
+  },
+  methods: {
+    parseImg(id) {
+      return '/images/ququ' + (id % 4 + 1) + '.png'
+    },
+    handleClick(cid, price) {
+      const hide = this.$message.loading('正在购买')
+      this.$http.post('/api/cricket/buy', {
+        cid: cid,
+        price: price
+      }).then( response => {
+        if (response.status == 200) {
+          this.$message.success('交易成功', 2000)
+          this.$router.push({ name: "cricket", params: { cricketId: response.data.cid } });
+        } else {
+          this.$message.error('购买失败' || response.data.error)
+        }
+      }).catch( error => {
+        console.log(error)
+        this.$message.error(error)
+      }).finally( () => {
+        hide()
+      })
     }
   }
 };

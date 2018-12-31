@@ -477,7 +477,7 @@ var bc = {
 
     async checkOwner(req, res, next) {
         try {
-            let t = await getCricketById(req.params.cid)
+            let t = await getCricketById(req.body.cid)
             if (t.owner == req.session.address) {
                 next()
             } else {
@@ -543,6 +543,7 @@ var bc = {
                 })
             }
         } catch (e) {
+            console.log(e)
             res.status(400).end()
         }
     },
@@ -558,6 +559,7 @@ var bc = {
                 })
             }
         } catch (e) {
+            console.log(e)
             res.status(400).end()
         }
     },

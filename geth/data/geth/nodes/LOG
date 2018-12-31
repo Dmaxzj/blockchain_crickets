@@ -337,3 +337,34 @@
 14:45:54.421247 table@remove removed @77
 15:31:55.941548 db@close closing
 15:31:55.962496 db@close done T·20.9476ms
+=============== Dec 31, 2018 (CST) ===============
+20:22:30.475020 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:22:30.543836 version@stat F·[0 2] S·2MiB[0B 2MiB] Sc·[0.00 0.02]
+20:22:30.543836 db@open opening
+20:22:30.544833 journal@recovery F·1
+20:22:30.545830 journal@recovery recovering @79
+20:22:30.867226 memdb@flush created L0@83 N·12888 S·265KiB "n:\x00..ail,v393201":"n:\xff..ail,v389254"
+20:22:30.875185 version@stat F·[1 2] S·2MiB[265KiB 2MiB] Sc·[0.25 0.02]
+20:22:31.228621 db@janitor F·5 G·0
+20:22:31.228621 db@open done T·684.7849ms
+20:22:35.505460 table@compaction L0·1 -> L1·2 S·2MiB Q·399662
+20:22:36.105526 table@build created L1@86 N·59767 S·2MiB "n:\x00..ing,v222169":"n:\xcd..ver,v351830"
+20:22:36.615744 table@build created L1@87 N·14180 S·499KiB "n:\xcd..ing,v349531":"version,v1"
+20:22:36.615744 version@stat F·[0 2] S·2MiB[0B 2MiB] Sc·[0.00 0.03]
+20:22:36.692537 table@compaction committed F-1 S-173KiB Ke·0 D·10341 T·1.1870769s
+20:22:36.693534 table@remove removed @83
+20:22:36.693534 table@remove removed @81
+20:22:36.694531 table@remove removed @82
+22:38:02.011882 memdb@flush N·41176 S·3MiB
+22:38:02.673214 memdb@flush created L0@89 N·41176 S·794KiB "n:\x00..ing,v412666":"n:\xff..ing,v435006"
+22:38:02.673214 version@stat F·[1 2] S·3MiB[794KiB 2MiB] Sc·[0.25 0.03]
+22:38:02.938229 memdb@flush committed F·1 T·926.3466ms
+22:38:02.951077 journal@remove removed @84
+22:38:57.842990 table@compaction L0·1 -> L1·2 S·3MiB Q·441048
+22:38:58.761274 table@build created L1@90 N·60070 S·2MiB "n:\x00..ing,v222169":"n:\xbc..ail,v381922"
+22:38:59.505016 table@build created L1@91 N·20214 S·719KiB "n:\xbc..ail,v382063":"version,v1"
+22:38:59.505016 version@stat F·[0 2] S·2MiB[0B 2MiB] Sc·[0.00 0.03]
+22:38:59.581130 table@compaction committed F-1 S-571KiB Ke·0 D·34839 T·1.73814s
+22:38:59.583124 table@remove removed @89
+22:38:59.586113 table@remove removed @86
+22:38:59.590102 table@remove removed @87

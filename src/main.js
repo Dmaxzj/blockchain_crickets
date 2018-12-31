@@ -3,8 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
 
-import { Button, Layout, Menu, Icon, message, List, Card, Col, Row, Table, Input, InputNumber } from 'ant-design-vue'
+import { Button, Layout, Menu, Icon, message, List, Card, Col, Row, Table, Input, InputNumber, Spin, Alert, Modal, Select } from 'ant-design-vue'
 
 Vue.use(Button)
 Vue.use(Layout)
@@ -17,8 +18,13 @@ Vue.use(Row)
 Vue.use(Table)
 Vue.use(Input)
 Vue.use(InputNumber)
+Vue.use(Spin)
+Vue.use(Alert)
+Vue.use(Modal)
+Vue.use(Select)
 
 Vue.prototype.$message = message
+Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
 

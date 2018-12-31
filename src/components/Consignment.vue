@@ -1,15 +1,10 @@
 <template>
   <a-list :grid="{ gutter: 16, column: 4 }" :dataSource="crickets">
     <a-list-item slot="renderItem" slot-scope="item, index">
-      <a-card
-        :bodyStyle="{ padding: 0 }"
-        :title="item.name"
-        hoverable
-        bordered
-      >
+      <a-card :bodyStyle="{ padding: 0 }" :title="item.name" hoverable bordered>
         <img
           alt="example"
-          src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+          :src="item.img"
           slot="cover"
         >
         <a-row
@@ -22,14 +17,10 @@
           <a-col :span="12">负场: {{item.loss}}</a-col>
         </a-row>
         <div :style="{ width: '100%' }">
-          <a-input-number
-            :min="1"
-            :style="{ width: '100%', float: 'right' }"
-            v-model="item.price"
-          />
+          <a-input-number :min="1" :style="{ width: '100%', float: 'right' }" v-model="item.price"/>
         </div>
         <div style="width: 100%">
-          <a-button type="primary" block @click="clickHandle(item.id)">出售</a-button>
+          <a-button type="primary" block @click="clickHandle(item.id, item.price)">出售</a-button>
         </div>
       </a-card>
     </a-list-item>
@@ -37,43 +28,62 @@
 </template>
 
 <script>
-const crickets = [
-  {
-    id: 0,
-    name: "ququ0",
-    win: 10,
-    loss: 20,
-    price: 0
-  },
-  {
-    id: 1,
-    name: "ququ1",
-    win: 110,
-    loss: 220,
-    price: 0
-  },
-  {
-    id: 2,
-    name: "ququ2",
-    win: 110,
-    loss: 20,
-    price: 0
-  }
-];
 
 export default {
   data() {
     return {
-      crickets: crickets
+      crickets: [],
+      loading: false
     };
   },
+  created () {
+    this.fetchData()
+  },
   methods: {
-      onChange(value) {
-        console.log('changed', value)
-      },
-      clickHandle (e) {
-          console.log(crickets[e])
-      }
+    parseImg(id) {
+      return '/images/ququ' + (id % 4 + 1) + '.png'
+    },
+    fetchData() {
+      this.$http
+          .get("/api/crickets/")
+          .then(respones => {
+            this.crickets = respones.data.filter(item => {
+              return !item.selling
+            }).map(item => {
+              item.img = this.parseImg(item.id)
+              return item
+            });;
+          })
+          .catch(error => {
+            this.$message.error("无法获取数据");
+          })
+          .finally(() => (this.loading = false));
+    },
+    onChange(value) {
+      console.log("changed", value);
+    },
+    clickHandle(cid, price) {
+      const hide = this.$message.loading("正在出售");
+      this.$http
+        .post("/api/cricket/sell", {
+          cid: cid,
+          price: price
+        })
+        .then(response => {
+          if (response.status == 200) {
+            this.$message.success("交易成功", 2000);
+            this.fetchData()
+          } else {
+            this.$message.error("出售失败" || response.data.error);
+          }
+        })
+        .catch(error => {
+          this.$message.error(error);
+        })
+        .finally(() => {
+          hide();
+        });
+    }
   }
 };
 </script>

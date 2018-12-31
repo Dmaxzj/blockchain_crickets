@@ -5,10 +5,14 @@ var router = express.Router();
 
 /* GET apis listing. */
 router.get('/users', controllers.getAllAccounts);
+router.get('/user', (req, res) => {
+    res.json(!!req.session.address)
+})
 router.get('/crickets', controllers.getAllCrickets)
 router.get('/crickets/selling', controllers.getCricketsOnSelling)
 router.get('/crickets/:cid', controllers.getCricketById)
 router.get('/user/crickets', bc.authUser, controllers.getCricketsByOwner)
+
 
 router.get('/worldcup', controllers.getWorldCup)
 

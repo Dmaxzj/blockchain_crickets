@@ -51,17 +51,45 @@ const columns = [{
   dataIndex: 'isWin',
   scopedSlots: { customRender: 'name' },
 }, {
-  title: 'Cash Assets',
-
-  dataIndex: 'money',
+  title: '对手',
+  dataIndex: 'opponents',
 }, {
-  title: 'Address',
-  dataIndex: 'address',
+  title: '第一回合',
+  dataIndex: 'round1',
+},{
+  title: '第二回合',
+  dataIndex: 'round2',
+},{
+  title: '第三回合',
+  dataIndex: 'round3',
 }];
 
+const result = {
+  v1: '险胜',
+  v2: '小胜',
+  v3: '大胜',
+  v4: '碾压',
+  d1: '失败'
+}
+
+function getDescription(score) {
+  if (score > 0) {
+    if (score < 20) {
+      return result['v1']
+    } else if (score < 60) {
+      return result['v2']
+    } else if (score < 160) {
+      return result['v3']
+    } else {
+      return result['v4']
+    }
+  } else {
+    return result['d1']
+  }
+}
 
 export default {
-  data() {
+  data () {
     return {
       columns,
       tabListNoTitle: [
@@ -75,40 +103,50 @@ export default {
         }
       ],
       noTitleKey: "info",
-      cricket: {
-        id: 0,
-        name: "ququ0",
-        win: 10,
-        loss: 10,
-        owner: "dzj",
-        price: 100,
-        record: [
-          {
-            winner: 1,
-            losser: 2,
-            isWin: "赢"
-          },
-          {
-            winner: 2,
-            losser: 3,
-            isWin: "赢"
-          }
-        ]
-      }
+      cricket: null
     };
+  },
+  created () {
+    this.fetchData()
+  },
+  watch: {
+    '$route': 'fetchData'
   },
   methods: {
     onTabChange(key, type) {
-      console.log(key, type);
       this[type] = key;
+    },
+
+    fetchData() {
+        const cid = this.$route.path.split('/')[2]
+        this.$http.get('/api/crickets/' + cid).then( response => {
+          if (response.status !== 200) {
+            this.$message.error(response.data || '蛐蛐不存在')
+          } else {
+            this.cricket = response.data
+          }
+        })
+        .catch(error => {
+          this.$message.error('无法获取数据')
+        })
+
+        this.$http.get('/api/record/' + cid).then( response => {
+          this.cricket.record = response.data.map( item, index => {
+            return {
+              isWin: item.winner == cid,
+              opponents: item.winner == cid ? item.winner : item.losser,
+              round1: getDescription(item.round1),
+              round2: getDescription(item.round2),
+              round3: getDescription(item.round3)
+            }
+          })
+        })
     }
   }
 };
 </script>
 
 <style scoped>
-.cricket-container {
-}
 
 .info-item {
   text-align: center;
