@@ -86,10 +86,14 @@ export default {
   created() {
     this.$http.get("/api/user").then(response => {
       this.login == response.data;
+    }).catch(error => {
+      this.$message.error(error.response.data)
     });
     this.$http.get('/api/users').then(response => {
       this.users = response.data
       this.selectUser = this.users[0]
+    }).catch(error => {
+      this.$message.error(error.response.data)
     })
   },
   methods: {
@@ -123,7 +127,9 @@ export default {
     logoutHandler() {
       this.$http.post("/api/logout").then(response => {
         this.login = false;
-      });
+      }).then(
+        this.$router.push({name: "allcrickets"})
+      );
     },
     handleClick(e) {
       console.log(e);

@@ -79,7 +79,7 @@ var controllers = {
     async buyCricket(req, res) {
         try {
             await bc.buyCricket(req.body.cid, req.body.price, req.session.address)
-            res.status(200).end()
+            res.status(200).end({cid: req.body.cid})
         } catch (e) {
             console.log(e)
             res.status(400).end()
@@ -89,7 +89,7 @@ var controllers = {
     async createCricket(req, res) {
         try {
             let t = await bc.createCricket(req.body.name, req.body.nonce, req.session.address)
-            res.status(200).end()
+            res.status(200).json({ cid: t })
         } catch (e) {
             console.log(e)
             res.status(400).end()

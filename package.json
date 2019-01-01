@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
+    "start": "cd ./server && npm install && npm run start",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js",
     "geth": "geth --identity myTestChain --datadir ./geth/data --networkid 395 --rpc --rpcport 8545 --rpcapi='db,eth,net,web3,personal,web3' console"

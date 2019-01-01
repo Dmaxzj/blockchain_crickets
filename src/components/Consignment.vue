@@ -45,9 +45,9 @@ export default {
     },
     fetchData() {
       this.$http
-          .get("/api/crickets/")
-          .then(respones => {
-            this.crickets = respones.data.filter(item => {
+          .get("/api/user/crickets/")
+          .then(response => {
+            this.crickets = response.data.filter(item => {
               return !item.selling
             }).map(item => {
               item.img = this.parseImg(item.id)
@@ -55,7 +55,9 @@ export default {
             });;
           })
           .catch(error => {
-            this.$message.error("无法获取数据");
+            console.log(error.response.data || "无法获取数据")
+            console.log(error.response.data)
+            this.$message.error(error.response.data || "无法获取数据");
           })
           .finally(() => (this.loading = false));
     },
@@ -70,15 +72,11 @@ export default {
           price: price
         })
         .then(response => {
-          if (response.status == 200) {
             this.$message.success("交易成功", 2000);
             this.fetchData()
-          } else {
-            this.$message.error("出售失败" || response.data.error);
-          }
         })
         .catch(error => {
-          this.$message.error(error);
+          this.$message.error(error.response.data);
         })
         .finally(() => {
           hide();

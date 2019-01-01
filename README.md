@@ -5,7 +5,7 @@
 ## Build Setup
 
 ``` bash
-# install dependencies
+# install fortend dependencies
 npm install
 
 # serve with hot reload at localhost:8080
@@ -16,6 +16,22 @@ npm run build
 
 # build for production and view the bundle analyzer report
 npm run build --report
+
+# install backend dependencies
+cd ./server && npm install
+
+# start server
+cd ./server && npm start
+
+# open blockchain
+npm run geth
+
+
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+
+## 运行
+
+安装前后端依赖 -> 构建前端 -> 启动geth -> 启动后端 -> http://localhost:3000
+

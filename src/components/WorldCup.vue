@@ -1,28 +1,29 @@
 <template>
   <div>
     <div :style="{textAlign: 'center'}">
-      <a-button v-if="!worldCup.begin" @click="organiseHandler" type="primary">组织比赛</a-button>
+      <a-button v-if="(worldCup.state==0)" @click="organiseHandler" type="primary">组织比赛</a-button>
       <div v-else :style="{textAlign: 'center'}">
         <a-alert type="info" :style="{marginBottom: '15px'}">
-          <span slot="message">比赛将于 {{worldCup.starttime}} 后开始</span>
+          <span slot="message">比赛将于 {{parseDate}} 后开始</span>
         </a-alert>
         <a-button @click="endHandler" type="primary">开始比赛</a-button>
       </div>
     </div>
 
     <a-table
-      v-if="worldCup.begin"
+      v-if="(worldCup.state==1)"
       :columns="columns"
       :dataSource="crickets"
       bordered
       :style="{ marginTop: '50px'}"
+      rowKey="id"
     >
-      <template slot="name" slot-scope="text">
+      <template slot="name" slot-scope="text, record">
         <a href="javascript:;">{{text}}</a>
       </template>
-      <template slot="operation" slot-scope="text, record">
+      <span slot="action" slot-scope="text, record">
         <a href="javascript:;" @click="handleParticipation(record.id)">参赛</a>
-      </template>
+      </span>
     </a-table>
   </div>
 </template>
@@ -32,47 +33,57 @@ const columns = [
   {
     title: "名字",
     dataIndex: "name",
-    scopedSlots: { customRender: "name" }
+    scopedSlots: { customRender: "name" },
+    key: "name"
   },
   {
     title: "胜场",
-    dataIndex: "win"
+    dataIndex: "win",
+    key: "win"
   },
   {
     title: "负场",
-    dataIndex: "loss"
+    dataIndex: "loss",
+    key: "loss"
+  },
+  {
+    title: "参战",
+    key: "action",
+    scopedSlots: { customRender: "action" }
   }
 ];
 export default {
   data() {
     return {
       worldCup: {
-        begin: 0,
-        starttime: 0
+        state: 0,
+        startDate: 0
       },
       columns,
-      noTitleKey: "info",
       crickets: [],
       loading: true
     };
   },
-  created () {
-    this.fetchData()
+  created() {
+    this.fetchData();
   },
+  computed: {
+    parseDate() {
+      const time = new Date(this.worldCup.startDate * 1000);
+      return time.toLocaleString();
+    }
+  },
+
   methods: {
     handleParticipation(cid) {
       const hide = this.$message.loading("正在报名");
       this.$http
         .post("/api/worldcup/" + cid)
-        .then(respones => {
-          if (respones.status == 200) {
+        .then(response => {
             this.$message.success("报名成功", 1000);
-          } else {
-            this.$message.error(respones.data.error || "报名失败");
-          }
         })
-        .then(error => {
-          this.$message.error(error.status);
+        .catch(error => {
+          this.$message.error(error.response.data);
         })
         .finally(() => {
           hide();
@@ -81,35 +92,24 @@ export default {
     fetchData() {
       this.$http
         .get("/api/user/crickets")
-        .then(respones => {
-          if (respones.status == 403) {
-            this.$message.error("请先登陆");
-          } else if (respones.status == 200) {
-            this.crickets = respones.data;
-          } else {
-            this.$message.error(respones.data.error);
-          }
+        .then(response => {
+          this.crickets = response.data;
         })
         .catch(error => {
-          this.$message.error("无法获取数据");
+          this.$message.error(error.response.data || "无法获取数据");
         })
         .finally(() => (this.loading = false));
 
       this.$http
         .get("/api/worldcup")
-        .then(respones => {
-          if (respones.status == 403) {
-            this.$message.error("请先登陆");
-          } else if (respones.status == 200) {
-            this.worldCup = respones.data;
-          } else {
-            this.$message.error(respones.data.error);
-          }
+        .then(response => {
+          this.worldCup = response.data;
         })
         .catch(error => {
-          this.$message.error("无法获取数据");
+          this.$message.error(error.response.data || "无法获取数据");
         })
         .finally(() => (this.loading = false));
+
     },
 
     endHandler() {
@@ -117,15 +117,11 @@ export default {
       this.$http
         .post("/api/worldcup/end")
         .then(response => {
-          if (response.status == 200) {
-            this.$message.success("比赛结束");
-            this.worldCup.status = 0;
-          } else {
-            this.$message.error(response.data.error || "出现错误");
-          }
+          this.$message.success("比赛结束");
+          this.worldCup.status = 0;
         })
         .catch(error => {
-          this.$message.error(error);
+          this.$message.error(error.response.data || "无法结束比赛");
         })
         .finally(() => {
           hide();
@@ -137,15 +133,11 @@ export default {
       this.$http
         .post("/api/worldcup/end")
         .then(response => {
-          if (response.status == 200) {
-            this.$message.success("开放报名");
-            this.worldCup = response.data;
-          } else {
-            this.$message.error(response.data.error || "出现错误");
-          }
+          this.$message.success("开放报名");
+          this.worldCup = response.data;
         })
         .catch(error => {
-          this.$message.error(error);
+          this.$message.error(error.response.data || "无法组织比赛");
         })
         .finally(() => {
           hide();

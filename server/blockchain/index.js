@@ -431,6 +431,7 @@ var bc = {
             from: owner,
             gas: 500000
         })
+        return (await myContract.methods.index().call()) - 1
     },
 
     async getWorldCup() {
@@ -462,6 +463,7 @@ var bc = {
         await myContract.methods.organiseCompetitions().send({
             from: owner
         })
+        return await myContract.methods.worldCup().call()
     },
 
     async getRecordByCricketId(cid) {
@@ -477,13 +479,13 @@ var bc = {
 
     async checkOwner(req, res, next) {
         try {
-            let t = await getCricketById(req.body.cid)
+            let t = await getCricketById(req.body.cid || req.params.cid)
             if (t.owner == req.session.address) {
                 next()
             } else {
-                res.status(400).json({
-                    error: '你不是这个蛐蛐的拥有者'
-                })
+                res.status(400).json(
+                    '你不是这个蛐蛐的拥有者'
+                )
             }
         } catch (e) {
             console.log(e)
@@ -498,9 +500,9 @@ var bc = {
             if (t >= req.body.price) {
                 next()
             } else {
-                res.status(400).json({
-                    error: '账户余额不足'
-                })
+                res.status(400).json(
+                    '账户余额不足'
+                )
             }
         } catch (e) {
             console.log(e)
@@ -512,7 +514,7 @@ var bc = {
         if (req.session.address) {
             next()
         } else {
-            res.status(403).end()
+            res.status(403).json('请先登陆')
         }
     },
 
@@ -522,9 +524,9 @@ var bc = {
             if (t.state == 0) {
                 next()
             } else {
-                res.status(400).json({
-                    error: '比赛还没结束'
-                })
+                res.status(400).json(
+                    '比赛还没结束'
+                )
             }
         } catch (e) {
             console.log(e)
@@ -538,9 +540,9 @@ var bc = {
             if (t.state == 1 && Math.round(Date.now() / 1000) > t.startDate) {
                 next()
             } else {
-                res.status(400).json({
-                    error: '不能开战'
-                })
+                res.status(400).json(
+                    '不能开战'
+                )
             }
         } catch (e) {
             console.log(e)
@@ -554,9 +556,9 @@ var bc = {
             if (t.state == 1) {
                 next()
             } else {
-                res.status(400).json({
-                    error: '不能参赛'
-                })
+                res.status(400).json(
+                    '不能参赛'
+                )
             }
         } catch (e) {
             console.log(e)
@@ -570,7 +572,7 @@ var bc = {
             if (t == true) {
                 next()
             } else {
-                res.status(400).json({ error: '缺少矿工' })
+                res.status(400).json('缺少矿工')
             }
         } catch (e) {
             console.log(e)

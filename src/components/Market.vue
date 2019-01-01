@@ -34,23 +34,18 @@ export default {
   methods: {
     handleClick() {
       const hide = this.$message.loading('正在创建蛐蛐')
+      console.log(this.name, this.nonce)
       this.$http
         .post("/api/cricket", {
           name: this.name,
           nonce: this.nonce
         })
-        .then(response => {
-          if (respones.status == 403) {
-            this.$message.error("请先登陆");
-          } else if (respones.status == 200) {
+        .then(response => {         
             this.$message.success('获得新蛐蛐', 2000)
             this.$router.push({ name: "cricket", params: { cricketId: response.data.cid } });
-          } else {
-            this.$message.error(respones.data.error);
-          }
         })
         .catch(error => {
-          this.$message.error("无法获取数据");
+          this.$message.error(error.response.data || "无法获取数据");
         })
         .finally(() => hide());
     }

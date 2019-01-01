@@ -8,13 +8,9 @@
           :title="item.name"
           hoverable
           bordered
-          @click="handleClick"
+          @click="handleClick(item.id)"
         >
-          <img
-            alt="example"
-            :src="item.img"
-            slot="cover"
-          >
+          <img alt="example" :src="item.img" slot="cover">
           <a-row
             type="flex"
             justify="center"
@@ -31,8 +27,8 @@
 </template>
 
 <script>
-
 export default {
+  
   data() {
     return {
       loading: true,
@@ -47,40 +43,37 @@ export default {
   },
   methods: {
     parseImg: function(id) {
-      return '/images/ququ' + (id % 4 + 1) + '.png'
+      return "/images/ququ" + ((id % 4) + 1) + ".png";
     },
-    handleClick() {
-      this.$router.push({ name: "cricket", params: { cricketId: 0 } });
+    handleClick(cid) {
+      this.$router.push({ name: "cricket", params: { cricketId: cid } });
     },
 
     fetchData() {
       if (this.$route.path == "/crickets") {
         this.$http
           .get("/api/crickets")
-          .then(respones => {
-            this.crickets = respones.data.map(item => {
-              item.img = this.parseImg(item.id)
-              return item
+          .then(response => {
+            this.crickets = response.data.map(item => {
+              item.img = this.parseImg(item.id);
+              return item;
             });
           })
           .catch(error => {
-            this.$message.error("无法获取数据");
+            this.$message.error(error.response.data || "无法获取数据");
           })
           .finally(() => (this.loading = false));
       } else {
         this.$http
           .get("/api/user/crickets")
-          .then(respones => {
-            if (respones.status == 403) {
-              this.$message.error("请先登陆");
-            } else if (respones.status == 200) {
-              this.crickets = respones.data;
-            } else {
-              this.$message.error(respones.data.error);
-            }
+          .then(response => {
+            this.crickets = response.data.map(item => {
+              item.img = this.parseImg(item.id);
+              return item;
+            });
           })
           .catch(error => {
-            this.$message.error("无法获取数据");
+            this.$message.error(error.response.data || "无法获取数据");
           })
           .finally(() => (this.loading = false));
       }
